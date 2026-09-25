@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "VoiceRemedy",
+  "version": "0.7.0",
+  "identifier": "com.ahmidarrow.voiceremedy",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5180",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "VoiceRemedy · Your singing studio",
+        "width": 1380,
+        "height": 980,
+        "minWidth": 400,
+        "minHeight": 640,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; media-src 'self' blob: mediastream:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost; worker-src 'self' blob:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "publisher": "Ahmi Darrow",
+    "category": "Education",
+    "shortDescription": "Find your voice, one gentle practice at a time.",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "startMenuFolder": "VoiceRemedy"
+      }
+    }
+  }
+}

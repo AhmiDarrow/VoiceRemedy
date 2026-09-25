@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VoiceRemedy</string>
+    <string name="title_activity_main">VoiceRemedy</string>
+    <string name="package_name">com.ahmidarrow.voiceremedy</string>
+    <string name="custom_url_scheme">com.ahmidarrow.voiceremedy</string>
+</resources>

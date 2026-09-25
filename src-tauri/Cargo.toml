@@ -1,0 +1,10 @@
+[package]
+name = "voice-remedy"
+version = "0.7.0"
+description = "VoiceRemedy singing studio"
+authors = ["Ahmi Darrow"]
+edition = "2021"
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+[dependencies]
+tauri = { version = "2", features = [] }

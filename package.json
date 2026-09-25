@@ -1,0 +1,36 @@
+{
+  "name": "voice-remedy",
+  "version": "0.7.0",
+  "private": true,
+  "type": "module",
+  "description": "An offline singing studio with a gentle spoken coach.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5180",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "preview": "vite preview --host 127.0.0.1 --port 5180",
+    "desktop:build": "tauri build --bundles nsis",
+    "desktop:dev": "tauri dev",
+    "android:sync": "npm run build && cap sync android",
+    "android:build": "npm run android:sync && node scripts/build-android.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.0",
+    "@capacitor/core": "8.5.0",
+    "@capacitor/app": "8.1.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "lucide-react": "0.469.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.0",
+    "@tauri-apps/cli": "^2.2.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.6",
+    "vitest": "^2.1.8",
+    "jsdom": "^25.0.1"
+  }
+}

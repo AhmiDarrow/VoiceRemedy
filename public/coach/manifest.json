@@ -1,0 +1,177 @@
+{
+  "engine": "Kokoro-82M v1.0",
+  "voice": "af_heart",
+  "speed": 0.94,
+  "clips": {
+    "findoctave": {
+      "seconds": 18.965,
+      "text": "Let us find a comfortable note and its octave. You do not need to know any musical terms. When I finish speaking, hum a relaxed sound near your normal speaking voice for a few seconds. Do not try to sing high or low. The number beside the note will tell you its octave. Then we can move the lesson to suit that note.",
+      "sha256": "43dcf9cdb34a8a64966eb87fbc1a7d1d7fbc1f5af3473f785ecfe64ae8cd9b8e"
+    },
+    "octavelower": {
+      "seconds": 19.072,
+      "text": "Your singing seems to be one octave below the reference. That means similar note names in a lower part of your voice. It is not a reason to push higher. Choose Match my octave to move the lesson down, then check that the new notes feel easy. A microphone can sometimes mistake an octave, so trust your comfort.",
+      "sha256": "e2099e8d4be9c475141a441d2cdd3c5d454c2c3509e8ccf87511cf09a4279e99"
+    },
+    "octavehigher": {
+      "seconds": 17.067,
+      "text": "Your singing seems to be one octave above the reference. That means similar note names in a higher part of your voice. Choose Match my octave to move the lesson up, then check that the new notes feel easy. A microphone can sometimes mistake an octave, so trust your comfort.",
+      "sha256": "08d30c7a21ad89e5031afd20e55a905949657b91f52f82f952a02c9206a648ee"
+    },
+    "row": {
+      "seconds": 16.64,
+      "text": "Let us learn Row, Row, Row Your Boat. Feel the gentle rocking pulse. The merry section jumps higher, so choose a starting note that keeps the top easy. We will learn that part in two small pieces. Hum first if the words feel busy. Sing after the soft chime.",
+      "sha256": "53226e6f0b8b94b82a63ce079934c5a7d5528b76f0d796125007c2fe3e477f94"
+    },
+    "sleeping": {
+      "seconds": 14.955,
+      "text": "Let us learn Are You Sleeping. Notice how each little phrase comes back again. Listen for the quicker notes in morning bells, and the lower bell at the end. Keep both ends of the melody comfortable. We are learning slowly. Sing after the soft chime.",
+      "sha256": "c3e29f95b298f57e411eeb4b7474ea843fba5d13b055d6101fb3cdbeb14eddfd"
+    },
+    "london": {
+      "seconds": 14.955,
+      "text": "Let us sing London Bridge Is Falling Down. Hear the little lift at the beginning, then the steps coming down. Imagine each next note before you sing it. Let the last note finish easily. Learn one short line at a time, after the soft chime.",
+      "sha256": "c4ed0eb12a3aaa19dfb78ba8d2624581114b2b7b6e9d69279d1bc5ee19d90fcf"
+    },
+    "joy": {
+      "seconds": 16.213,
+      "text": "Let us learn the Ode to Joy melody. Sing it on a gentle doo, so words do not distract you. Most notes move by small steps. Listen for the longer note near the end of the line. We will join the four lines when they feel familiar. Sing after the soft chime.",
+      "sha256": "9d13f012be93478b5337671f2ad13ba0acf9a23c2a9e65b3e3fa8b3832380cb0"
+    },
+    "joywhole": {
+      "seconds": 15.019,
+      "text": "Let us connect the four lines of Ode to Joy. Listen to the whole theme, then sing it back on doo after the soft chime. Take a normal breath between the lines. If a part is difficult, we can return to that short line. Keep your voice comfortable.",
+      "sha256": "85b00f8f81d3c1d63d68ed26e7b9ee4c210f5e925751575d34db9796307c70a3"
+    },
+    "mary": {
+      "seconds": 16.341,
+      "text": "Let us sing Mary Had a Little Lamb. We will learn one short line at a time. Hum after each reference, then add the words on the screen. Notice the small steps and repeated notes. After a comfortable echo, we will connect the line. Sing after the soft chime.",
+      "sha256": "87cb369c744491b00ade48dbb24ef0408cf7c6fe304dc01674c0736543b9195d"
+    },
+    "twinkle": {
+      "seconds": 16.235,
+      "text": "Let us sing Twinkle, Twinkle, Little Star. Listen carefully to the space between the notes. Imagine the next pitch before you move. Keep the higher notes light, and lower the starting note if you need to. Hum first, then add the words. Sing after the soft chime.",
+      "sha256": "88b397a8c620d319a1a4369ad2285a9b0276e2efdb90ba08886dd43d17584381"
+    },
+    "songverse": {
+      "seconds": 17.877,
+      "text": "You have a whole verse to sing. First listen to the complete melody. Then sing the highlighted words after the soft chime. Take an easy breath in the spaces between lines. If a line feels tricky, return to that line in the songbook. Keep the song gentle and enjoy telling its story.",
+      "sha256": "72e6b7bc1c7cd4362ffecd356b0511ee7166d0976204aa683b2a438bab926663"
+    },
+    "imported": {
+      "seconds": 16.32,
+      "text": "Let us learn the melody you reviewed from your song. I will play a reference, then listen while you hum it back. Sing after the soft chime. We will learn the notes first, then connect them into a phrase. Keep the whole pattern comfortable. You can adjust the starting note if needed.",
+      "sha256": "c60d387543d5d3f8448c42d9fb64c37f0182ee953a1e5afcba98aef6761dfd77"
+    },
+    "getready": {
+      "seconds": 1.109,
+      "text": "Get ready to sing.",
+      "sha256": "7789b9104252627959723a5c6b5ad103eee41e568a13b3fda1f42777e95a31b1"
+    },
+    "welcome": {
+      "seconds": 7.957,
+      "text": "Welcome to Voice Remedy. This is a little space for your voice. We will listen, practice, and take it one gentle note at a time.",
+      "sha256": "9c15cc6bd7ac3eda1a8d03e551317a6c70b92ed6cb2fa1905a981ac30522aff0"
+    },
+    "match": {
+      "seconds": 11.221,
+      "text": "Let your shoulders settle. Listen to my note, then hum softly and try to match its pitch. A small, easy sound is enough. I will say get ready. Sing after the soft chime.",
+      "sha256": "f8cab67f9b7ffa63f06b45949c3f1bc02d5186d05faba258e5e74096405872aa"
+    },
+    "hold": {
+      "seconds": 13.013,
+      "text": "Choose a comfortable note. Sing oo, with a loose jaw and an easy breath. Rest whenever you need to. We are practicing steadiness, not holding our breath. I will say get ready. Sing after the soft chime.",
+      "sha256": "0d609505cec0c721334dca7536d868f6d2fa9fc65ca82317e4a26c8ba7af88e4"
+    },
+    "three": {
+      "seconds": 12.629,
+      "text": "Listen to the three note pattern. Sing oo on each step after my reference. Stay light as you go up. You can always choose a lower starting note. I will say get ready. Sing after the soft chime.",
+      "sha256": "5fb985cb90c06c9dfcae7df818c141800ac6a5c7e69036e6323979c078fdcbdd"
+    },
+    "five": {
+      "seconds": 12.693,
+      "text": "Listen to the five note pattern. Sing ma on each step at a comfortable volume. Keep the top note easy, and take a breath whenever you need one. I will say get ready. Sing after the soft chime.",
+      "sha256": "0cfad7d5fba60cad285e4d311d0cb291a7c835c4eff423d6f11021bfd79e7bf9"
+    },
+    "thirds": {
+      "seconds": 11.221,
+      "text": "Listen for the space between the notes. Sing noo, lightly, and imagine the next note before you sing it. There is no need to rush. I will say get ready. Sing after the soft chime.",
+      "sha256": "a86d638f8d4cfc0b79c99194215a89740b304b516edebc83f813d3038b7acb8b"
+    },
+    "cool": {
+      "seconds": 11.669,
+      "text": "Let us finish gently. Hum softly as the notes step down. Keep your face and neck relaxed, and finish whenever you are ready to rest. I will say get ready. Sing after the soft chime.",
+      "sha256": "7bb37bd9f1e990ed07b55cadb09601761d2a8e5e21ba1071fbc4b86cb0e62ab7"
+    },
+    "great": {
+      "seconds": 9.088,
+      "text": "That was nicely centered. You spent most of your measured singing close to the target. Keep that easy feeling, take a breath, and try again when you are ready.",
+      "sha256": "564d12d26d92b5aaa8886d43f50ae6e60a224c25a0ccce5170342e81c992d243"
+    },
+    "low": {
+      "seconds": 9.365,
+      "text": "Your measured pitch was mostly below the target. Listen again, then gently bring the note a little higher. Keep your volume easy. There is no need to push.",
+      "sha256": "45e699d523805902196af5673d04b74fda67c2f8a83347eee1c3d7fce9fa4492"
+    },
+    "high": {
+      "seconds": 8.747,
+      "text": "Your measured pitch was mostly above the target. Listen again, relax, and let the note settle a little lower. An easy sound is all you need.",
+      "sha256": "b03767e3bfb2b2572170b840e2b303b63826a31d682a61a3939cf371d230d324"
+    },
+    "steady": {
+      "seconds": 8.128,
+      "text": "You found the neighborhood of the note. Try a shorter, softer sound, and listen for the center. Let us build steadiness a little at a time.",
+      "sha256": "99bb02e56a9af7d126eb65f707e6adf4045a053757523ac26fb23385014cc207"
+    },
+    "no-signal": {
+      "seconds": 9.216,
+      "text": "I did not hear enough clear singing to give useful feedback. Try a quieter room, move a little closer to the microphone, and sing one comfortable note.",
+      "sha256": "fcb0bcbccf1c7c51b9e09c9f78399604af53a45bfd3f517f55621ba63dd141bf"
+    },
+    "warmup": {
+      "seconds": 13.163,
+      "text": "Let us take a quiet moment before we sing. Soften your shoulders and your jaw. Follow the circle for two easy breaths. There is no need to fill up completely, and no breath holding. You can stop whenever you like.",
+      "sha256": "05f6c99b77deb24bb82196ae738cfb0b34f011a958558a7a44e72494986f2bfc"
+    },
+    "coverage": {
+      "seconds": 11.819,
+      "text": "We heard some clear singing, but not enough of the whole pattern yet. Let us try echo mode. Listen to each note, wait for your turn, then give it a gentle try. You can breathe between turns.",
+      "sha256": "64df9456608be0a22c115b888e5c4765c7e93a4363caccd3eeca7aed60bdf15a"
+    },
+    "octave": {
+      "seconds": 11.947,
+      "text": "Let us bring the target closer to your voice. Your typical pitch was quite far from the reference. Try the comfortable note finder, or choose an easier starting note. Please do not push or reach.",
+      "sha256": "76ff40c100daa6d7d426666a3f447694ed0104a9263863b5a1ca84182df9b0ab"
+    },
+    "pulse": {
+      "seconds": 14.144,
+      "text": "Listen for three short sounds and one longer sound. In phrase mode, sing doo on each note. Start when your turn begins. You can tap a finger gently to feel the pulse. I will say get ready. Sing after the soft chime.",
+      "sha256": "c22a0fbdbb6d92212e2f7205e830efac6cf1a018ac8c1fc9cc3742a22a0630ff"
+    },
+    "vowels": {
+      "seconds": 16.448,
+      "text": "Keep one easy note as you sing mi, meh, mah, moh, and moo. Your mouth can move freely. Listen for the same pitch as the syllables change. This exercise measures pitch, not the quality of your vowels. I will say get ready. Sing after the soft chime.",
+      "sha256": "df4e2285aee78c58b4be7359c41eb7af68e64c72899a883155a19d883f09e265"
+    },
+    "connect": {
+      "seconds": 14.379,
+      "text": "First learn the notes in echo mode. Then choose phrase mode and join them on an easy oo sound. Let the vowel continue as the notes change. Breathe whenever you need to. I will say get ready. Sing after the soft chime.",
+      "sha256": "ae1984d58eaaa2e5fd08f200f0f1c6aed877f43074d7dd61ff126362230d423d"
+    },
+    "melody": {
+      "seconds": 14.933,
+      "text": "Here is my song. Four small words, four gentle notes. Hum the melody first if you like, then add the words. Let the word song last a little longer. You are telling a story with your voice. I will say get ready. Sing after the soft chime.",
+      "sha256": "f102cb768e72789afd5c8bb4d24a6429d5744054963d75cadf37cded76dc490f"
+    },
+    "answer": {
+      "seconds": 14.571,
+      "text": "Soft as the rain. Let this line settle gently downward. Give each note its own place, then let the word rain finish comfortably. Take a quiet breath before you try again. I will say get ready. Sing after the soft chime.",
+      "sha256": "222dab93e199b98c1acc341bb09977d62c89262b09971162c8e574bc777c377d"
+    },
+    "song": {
+      "seconds": 21.312,
+      "text": "This is your first complete song. Here is my song. Soft as the rain. Step by slow step. I sing again. Learn it slowly in echo mode, then choose phrase mode to put it together. There are breathing spaces between the lines. Keep the sound easy, and enjoy telling your little story. I will say get ready. Sing after the soft chime.",
+      "sha256": "8e4d8d7cf8668f93a6dc8a57d43dc8629e9cc4f1ba77b82e645a4d3295384d04"
+    }
+  }
+}
