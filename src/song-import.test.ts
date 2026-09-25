@@ -5,7 +5,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
 import {SongImport} from './SongImport'
 import type {Lesson} from './course'
 vi.mock('./audio',()=>({stopPlayback:vi.fn()}))
-let host:HTMLDivElement,root:Root,onChoose:ReturnType<typeof vi.fn>,onClose:ReturnType<typeof vi.fn>,resolveDecode:((value:unknown)=>void)|undefined
+let host:HTMLDivElement,root:Root,onChoose:ReturnType<typeof vi.fn<(lesson:Lesson)=>void>>,onClose:ReturnType<typeof vi.fn<()=>void>>,resolveDecode:((value:unknown)=>void)|undefined
 class SilentPlayer{pause=vi.fn();play=vi.fn(()=>Promise.resolve());currentTime=0;onended=null;constructor(_:string){}}
 const decoded={duration:20,sampleRate:16000,length:320000,numberOfChannels:1,getChannelData:()=>new Float32Array(320000)}
 class TestWorker{
