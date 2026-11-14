@@ -53,7 +53,9 @@ describe('a coach-led lesson',()=>{
   it('ignores a late preview completion after stopping and starting another preview',async()=>{
     let first!:()=>void,second!:()=>void
     vi.mocked(playNotes).mockImplementationOnce(()=>new Promise(r=>{first=r})).mockImplementationOnce(()=>new Promise(r=>{second=r}))
-    await click('Hear the melody');await click('Stop melody');await click('Hear the melody')
+    await click('Hear the melody');await click('Stop melody')
+    expect(host.textContent).toContain('Start my lesson');expect(host.textContent).not.toContain('Resume with my coach')
+    await click('Hear the melody')
     await act(async()=>first())
     expect(host.textContent).toContain('Stop melody')
     await act(async()=>second())
@@ -136,6 +138,13 @@ describe('a coach-led lesson',()=>{
     expect(host.textContent).toContain('Here’s what I heard.')
     await act(async()=>{const select=host.querySelector('select')!;select.value='57';select.dispatchEvent(new Event('change',{bubbles:true}))})
     expect(host.textContent).not.toContain('Here’s what I heard.');expect(host.textContent).toContain('Start my lesson')
+  })
+  it('keeps feedback on screen after stopping a melody preview',async()=>{
+    await click('Start my lesson');await act(async()=>{await vi.advanceTimersByTimeAsync(41000)})
+    expect(host.textContent).toContain('Here’s what I heard.')
+    vi.mocked(playNotes).mockImplementationOnce(()=>new Promise(()=>{}))
+    await click('Hear the melody');await click('Stop melody')
+    expect(host.textContent).toContain('Here’s what I heard.');expect(host.textContent).toContain('Try that again')
   })
   it('starts spoken teaching before automatically opening the singing turn',async()=>{
     let resolve!:(value:boolean)=>void
