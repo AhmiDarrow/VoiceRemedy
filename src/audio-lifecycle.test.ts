@@ -30,6 +30,17 @@ describe('offline speech lifecycle without sound hardware',()=>{
     await Promise.resolve();expect(resume).toHaveBeenCalledOnce();controller.abort();await rejected
     expect(track.stop).toHaveBeenCalled();expect(close).toHaveBeenCalledOnce()
   })
+  it('measures low voices on high sample-rate audio devices',async()=>{
+    const rate=96000,hz=82.41,track={stop:vi.fn(),onended:null}
+    const analyser={fftSize:0,getFloatTimeDomainData:(out:Float32Array)=>{for(let i=0;i<out.length;i++)out[i]=.3*Math.sin(2*Math.PI*hz*i/rate)}}
+    vi.stubGlobal('navigator',{mediaDevices:{getUserMedia:vi.fn(async()=>({getTracks:()=>[track]}))}})
+    vi.stubGlobal('AudioContext',class {sampleRate=rate;resume=async()=>{};close=vi.fn(async()=>{});createAnalyser=()=>analyser;createMediaStreamSource=()=>({connect:vi.fn(),disconnect:vi.fn()})})
+    const readings:number[]=[],mic=await openMicrophone(p=>readings.push(p.hz),vi.fn())
+    expect(analyser.fftSize).toBe(4096)
+    await vi.advanceTimersByTimeAsync(90);mic.stop()
+    expect(readings).toHaveLength(1);expect(Math.abs(1200*Math.log2(readings[0]/hz))).toBeLessThan(12)
+    expect(track.stop).toHaveBeenCalledOnce()
+  })
   it('stops a stream granted after its request was cancelled',async()=>{
     const track={stop:vi.fn()};let grant!:(s:unknown)=>void
     vi.stubGlobal('navigator',{mediaDevices:{getUserMedia:vi.fn(()=>new Promise(r=>{grant=r}))}})

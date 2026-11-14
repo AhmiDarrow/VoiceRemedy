@@ -30,6 +30,18 @@ export function detectPitch(buffer: Float32Array, sampleRate: number): Pitch {
   }
   return none
 }
+// Detection is tuned for 2048-sample windows at 44.1-48 kHz. Higher device rates
+// (common on desktop audio interfaces) are averaged down so low voices stay in range.
+export function analysisFactor(sampleRate: number) { return sampleRate > 48000 ? Math.min(16, 2 ** Math.round(Math.log2(sampleRate / 48000))) : 1 }
+export function decimate(buffer: Float32Array, factor: number, out = new Float32Array(Math.floor(buffer.length / factor))) {
+  if (factor <= 1) { out.set(buffer.subarray(0, out.length)); return out }
+  for (let i = 0; i < out.length; i++) {
+    let sum = 0
+    for (let k = 0; k < factor; k++) sum += buffer[i * factor + k]
+    out[i] = sum / factor
+  }
+  return out
+}
 export type Result = { id: string; date: string; exercise: string; seconds: number; samples: number; accuracy: number | null; offset: number | null; steadiness: number | null; low: number | null; high: number | null }
 export function summarize(cents: number[], midis: number[]) {
   if (!cents.length) return { samples: 0, accuracy: null, offset: null, steadiness: null, low: null, high: null }

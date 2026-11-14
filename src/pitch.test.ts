@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectPitch, frequency, midiNumber, summarize, feedback, noteName } from './pitch'
+import { analysisFactor, decimate, detectPitch, frequency, midiNumber, summarize, feedback, noteName } from './pitch'
 describe('real signal pitch detection', () => {
   for (const rate of [44100, 48000]) for (const hz of [82.41, 130.81, 220, 261.63, 440, 880]) {
     it(`detects ${hz}Hz at ${rate}Hz without octave errors`, () => {
@@ -9,6 +9,22 @@ describe('real signal pitch detection', () => {
       expect(result.clarity).toBeGreaterThan(.84)
     })
   }
+  for (const rate of [88200, 96000, 192000]) for (const hz of [82.41, 130.81, 440, 880]) {
+    it(`keeps low and high voices in range on a ${rate}Hz device (${hz}Hz)`, () => {
+      const factor = analysisFactor(rate)
+      const signal = Float32Array.from({length: 2048 * factor}, (_, i) => 0.3 * Math.sin(2 * Math.PI * hz * i / rate) + 0.1 * Math.sin(4 * Math.PI * hz * i / rate))
+      const result = detectPitch(decimate(signal, factor), rate / factor)
+      expect(Math.abs(1200 * Math.log2(result.hz / hz))).toBeLessThan(12)
+      expect(result.clarity).toBeGreaterThan(.84)
+    })
+  }
+  it('uses valid analyser sizes for any device rate', () => {
+    for (const rate of [8000, 44100, 48000, 64000, 88200, 96000, 144000, 176400, 192000, 384000, 768000]) {
+      const size = 2048 * analysisFactor(rate)
+      expect(Math.log2(size) % 1).toBe(0); expect(size).toBeLessThanOrEqual(32768)
+      if (rate > 48000) expect(rate / analysisFactor(rate)).toBeGreaterThanOrEqual(36000)
+    }
+  })
   it('does not grade silence or DC offset as singing', () => {
     expect(detectPitch(new Float32Array(2048), 48000).hz).toBe(0)
     expect(detectPitch(new Float32Array(2048).fill(.2), 48000).hz).toBe(0)

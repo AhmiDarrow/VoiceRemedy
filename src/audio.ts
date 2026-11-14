@@ -1,4 +1,4 @@
-import { detectPitch, frequency, type Pitch } from './pitch'
+import { analysisFactor, decimate, detectPitch, frequency, type Pitch } from './pitch'
 let coach: HTMLAudioElement | null = null
 let cancelCoach: (() => void) | null = null
 let toneContext: AudioContext | null = null
@@ -85,10 +85,11 @@ export async function openMicrophone(onPitch: (pitch: Pitch) => void, onLost: ()
     if (onAbort) signal?.removeEventListener('abort',onAbort)
     if (signal?.aborted) throw aborted()
     const source = ctx.createMediaStreamSource(stream), analyser = ctx.createAnalyser()
-    analyser.fftSize = 2048; source.connect(analyser)
-    const buffer = new Float32Array(analyser.fftSize)
+    const factor = analysisFactor(ctx.sampleRate), rate = ctx.sampleRate / factor
+    analyser.fftSize = 2048 * factor; source.connect(analyser)
+    const buffer = new Float32Array(analyser.fftSize), frame = new Float32Array(2048)
     let stopped = false
-    const timer = window.setInterval(() => { if (!stopped) { analyser.getFloatTimeDomainData(buffer); onPitch(detectPitch(buffer, ctx!.sampleRate)) } }, 90)
+    const timer = window.setInterval(() => { if (!stopped) { analyser.getFloatTimeDomainData(buffer); onPitch(detectPitch(decimate(buffer, factor, frame), rate)) } }, 90)
     const stop = () => { if (stopped) return; stopped = true; clearInterval(timer); source.disconnect(); stream.getTracks().forEach(t => { t.onended = null; t.stop() }); void ctx!.close() }
     stream.getTracks().forEach(t => { t.onended = () => { stop(); onLost() } })
     return { stop }
