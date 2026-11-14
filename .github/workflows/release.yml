@@ -1,0 +1,197 @@
+name: Release
+
+# Push a v<version> tag to build and publish a release.
+# Run manually without a tag to build the installers as workflow artifacts only.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)publish, e.g. v0.7.1. Leave empty for a build-only dry run."
+        required: false
+        default: ""
+      allow_new_android_key:
+        description: "Sign the APK with a new CI debug key (it will NOT install over earlier releases)."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  # Signing certificate of the APKs published up to 0.7.0. Android only installs an
+  # upgrade signed with the same key, so a mismatch would strand existing users.
+  EXPECTED_APK_CERT_SHA256: 94d7055428f0a168f80e1d084cf8078421198506adeac1a76fadb5ff7e6d88fa
+
+jobs:
+  meta:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+      publish: ${{ steps.meta.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          if [ -n "${{ github.event.inputs.tag }}" ]; then TAG="${{ github.event.inputs.tag }}"; PUBLISH=true
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then TAG="${{ github.ref_name }}"; PUBLISH=true
+          else TAG="v${VERSION}"; PUBLISH=false; fi
+          node scripts/check-version.mjs "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+          echo "Release $TAG (version $VERSION, publish=$PUBLISH)"
+
+  build-windows:
+    name: Windows installer
+    needs: meta
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - run: npm ci
+      - run: npm test
+      - name: Build NSIS installer
+        run: npm run desktop:build
+      - name: Stage installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.meta.outputs.version }}"
+          mkdir -p out
+          SRC=$(ls src-tauri/target/release/bundle/nsis/*_"${VERSION}"_x64-setup.exe)
+          cp "$SRC" "out/VoiceRemedy-${VERSION}-Windows-Setup.exe"
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: out/*.exe
+          if-no-files-found: error
+
+  build-android:
+    name: Android / Fire APK
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - run: npm ci
+      - run: npm test
+      - name: Build web app and sync Capacitor
+        run: npm run android:sync
+      - name: Install release debug keystore
+        shell: bash
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+          ALLOW_NEW_KEY: ${{ github.event.inputs.allow_new_android_key || 'false' }}
+        run: |
+          set -euo pipefail
+          if [ -n "$KEYSTORE" ]; then
+            mkdir -p ~/.android
+            echo "$KEYSTORE" | base64 -d > ~/.android/debug.keystore
+            echo "Using the release debug keystore from ANDROID_DEBUG_KEYSTORE_BASE64."
+          elif [ "$ALLOW_NEW_KEY" = "true" ]; then
+            echo "::warning::No ANDROID_DEBUG_KEYSTORE_BASE64 secret; signing with a new CI debug key (will not upgrade earlier installs)."
+          else
+            echo "::error::Missing repository secret ANDROID_DEBUG_KEYSTORE_BASE64."
+            echo "Earlier APKs were signed with a local debug keystore; Android refuses upgrades signed with a different key."
+            echo "Set it with: base64 -w0 ~/.android/debug.keystore | gh secret set ANDROID_DEBUG_KEYSTORE_BASE64"
+            exit 1
+          fi
+      - name: Assemble debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Verify signing certificate and stage APK
+        shell: bash
+        env:
+          ALLOW_NEW_KEY: ${{ github.event.inputs.allow_new_android_key || 'false' }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.meta.outputs.version }}"
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner
+          "$APKSIGNER" verify --print-certs "$APK" | tee certs.txt
+          ACTUAL=$(grep -m1 'certificate SHA-256 digest' certs.txt | awk '{print $NF}')
+          EXPECTED=$(echo "$EXPECTED_APK_CERT_SHA256" | tr -d ' ')
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            if [ "$ALLOW_NEW_KEY" = "true" ]; then echo "::warning::APK certificate $ACTUAL differs from earlier releases."
+            else echo "::error::APK certificate $ACTUAL does not match earlier releases ($EXPECTED)."; exit 1; fi
+          fi
+          mkdir -p out
+          cp "$APK" "out/VoiceRemedy-${VERSION}-Android-Fire.apk"
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: out/*.apk
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub release
+    needs: [meta, build-windows, build-android]
+    if: needs.meta.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ needs.meta.outputs.tag }}"
+          VERSION="${{ needs.meta.outputs.version }}"
+          cp INSTALL.md out/INSTALL.md
+          (cd out && sha256sum "VoiceRemedy-${VERSION}-Windows-Setup.exe" "VoiceRemedy-${VERSION}-Android-Fire.apk" > "SHA256SUMS-${VERSION}.txt")
+          cat "out/SHA256SUMS-${VERSION}.txt"
+          NOTES="releases/RELEASE-NOTES-${VERSION}.md"
+          FILES=("out/VoiceRemedy-${VERSION}-Windows-Setup.exe" "out/VoiceRemedy-${VERSION}-Android-Fire.apk" out/INSTALL.md "out/SHA256SUMS-${VERSION}.txt")
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${FILES[@]}" --clobber
+            gh release edit "$TAG" --title "VoiceRemedy ${VERSION}" --notes-file "$NOTES" --draft=false --latest
+          else
+            gh release create "$TAG" "${FILES[@]}" --verify-tag --title "VoiceRemedy ${VERSION}" --notes-file "$NOTES" --latest
+          fi
