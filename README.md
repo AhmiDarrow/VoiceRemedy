@@ -2,7 +2,7 @@
 
 [Download the latest Windows and Android / Fire release](https://github.com/AhmiDarrow/VoiceRemedy/releases/latest).
 
-The Windows installer is unsigned; the Android / Fire APK is debug-signed for personal sideloading. Installation instructions are in [INSTALL.md](INSTALL.md).
+The Windows installer is unsigned. The Android / Fire APK is signed with a dedicated release key for personal sideloading. 0.7.0 was signed with a different key that is no longer available, so uninstall 0.7.0 once before installing 0.7.1. That uninstall clears on-device practice history. Installation instructions are in [INSTALL.md](INSTALL.md).
 
 VoiceRemedy is a fully offline guided singing coach for Windows, Android, and Fire HD 10 (2021 or newer).
 
@@ -22,9 +22,9 @@ The coach measures pitch. It does not assess tone quality, vocal health, vowel q
 
 ## Install and build
 
-See INSTALL.md. Installers for version 0.7.1 are attached to the GitHub release; release notes and checksums are kept in releases/. The Windows installer is unsigned; the APK is debug-signed for personal sideloading.
+See INSTALL.md. Installers for version 0.7.1 are attached to the GitHub release; release notes and checksums are kept in releases/. The Windows installer is unsigned. The APK is signed with a dedicated release key for personal sideloading. Uninstall 0.7.0 once before installing 0.7.1 (the signing key changed, and uninstalling clears on-device practice history).
 
-Releases: bump the version (`node scripts/check-version.mjs` confirms every file agrees), add releases/RELEASE-NOTES-<version>.md, then push a `v<version>` tag. .github/workflows/release.yml builds the Windows installer and Android APK and publishes them with INSTALL.md and a SHA256SUMS file. The APK must be signed with the same debug key as earlier releases so it installs as an upgrade: store that keystore as the `ANDROID_DEBUG_KEYSTORE_BASE64` repository secret (`base64 -w0 ~/.android/debug.keystore`). Running the workflow manually without a tag builds the installers as artifacts without publishing.
+Releases: bump the version (`node scripts/check-version.mjs` confirms every file agrees), add releases/RELEASE-NOTES-<version>.md, then push a `v<version>` tag. .github/workflows/release.yml builds the Windows installer and Android APK and publishes them with INSTALL.md and a SHA256SUMS file. The APK is signed in CI with the dedicated release keystore stored as `ANDROID_RELEASE_KEYSTORE_BASE64`, `ANDROID_RELEASE_STORE_PASSWORD`, `ANDROID_RELEASE_KEY_PASSWORD`, and `ANDROID_RELEASE_KEY_ALIAS`. Keep that same key for future upgrades. Running the workflow manually without a tag builds the installers as artifacts without publishing.
 
 Commands: npm ci, npm run dev, npm test, npm run build, npm run desktop:build, npm run android:build.
 

@@ -12,10 +12,6 @@ on:
         description: "Existing tag to (re)publish, e.g. v0.7.1. Leave empty for a build-only dry run."
         required: false
         default: ""
-      allow_new_android_key:
-        description: "Sign the APK with a new CI debug key (it will NOT install over earlier releases)."
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -26,9 +22,10 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Signing certificate of the APKs published up to 0.7.0. Android only installs an
-  # upgrade signed with the same key, so a mismatch would strand existing users.
-  EXPECTED_APK_CERT_SHA256: 94d7055428f0a168f80e1d084cf8078421198506adeac1a76fadb5ff7e6d88fa
+  # SHA-256 of the dedicated release certificate introduced in 0.7.1.
+  # The keystore that signed 0.7.0 (94d70554…) is no longer available, so
+  # 0.7.0 users must uninstall once before installing 0.7.1.
+  EXPECTED_APK_CERT_SHA256: 69f473e9a62c68b72b5d32b3c7e9198d1d3c2353df4aae35d9b7578ad2ee9215
 
 jobs:
   meta:
@@ -114,48 +111,68 @@ jobs:
       - run: npm test
       - name: Build web app and sync Capacitor
         run: npm run android:sync
-      - name: Install release debug keystore
+      - name: Install release keystore
         shell: bash
         env:
-          KEYSTORE: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
-          ALLOW_NEW_KEY: ${{ github.event.inputs.allow_new_android_key || 'false' }}
+          KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          if [ -n "$KEYSTORE" ]; then
-            mkdir -p ~/.android
-            echo "$KEYSTORE" | base64 -d > ~/.android/debug.keystore
-            echo "Using the release debug keystore from ANDROID_DEBUG_KEYSTORE_BASE64."
-          elif [ "$ALLOW_NEW_KEY" = "true" ]; then
-            echo "::warning::No ANDROID_DEBUG_KEYSTORE_BASE64 secret; signing with a new CI debug key (will not upgrade earlier installs)."
-          else
-            echo "::error::Missing repository secret ANDROID_DEBUG_KEYSTORE_BASE64."
-            echo "Earlier APKs were signed with a local debug keystore; Android refuses upgrades signed with a different key."
-            echo "Set it with: base64 -w0 ~/.android/debug.keystore | gh secret set ANDROID_DEBUG_KEYSTORE_BASE64"
+          umask 077
+          if [ -z "${KEYSTORE_B64}" ] || [ -z "${STORE_PASSWORD}" ] || [ -z "${KEY_PASSWORD}" ] || [ -z "${KEY_ALIAS}" ]; then
+            echo "::error::Missing Android release signing secrets (ANDROID_RELEASE_KEYSTORE_BASE64, ANDROID_RELEASE_STORE_PASSWORD, ANDROID_RELEASE_KEY_PASSWORD, ANDROID_RELEASE_KEY_ALIAS)."
             exit 1
           fi
-      - name: Assemble debug APK
+          SIGN_DIR="$RUNNER_TEMP/voiceremedy-signing"
+          mkdir -p "$SIGN_DIR"
+          printf '%s' "$KEYSTORE_B64" | tr -d '[:space:]' | base64 -d > "$SIGN_DIR/release.jks"
+          printf '%s' "$STORE_PASSWORD" | tr -d '\r\n' > "$SIGN_DIR/store.pass"
+          printf '%s' "$KEY_PASSWORD" | tr -d '\r\n' > "$SIGN_DIR/key.pass"
+          printf '%s' "$KEY_ALIAS" | tr -d '\r\n' > "$SIGN_DIR/alias.txt"
+          chmod 600 "$SIGN_DIR"/*
+          test -s "$SIGN_DIR/release.jks"
+          echo "Release keystore installed."
+      - name: Assemble release APK
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-      - name: Verify signing certificate and stage APK
+          ./gradlew assembleRelease --no-daemon
+      - name: Sign release APK and verify certificate
         shell: bash
-        env:
-          ALLOW_NEW_KEY: ${{ github.event.inputs.allow_new_android_key || 'false' }}
         run: |
           set -euo pipefail
+          SIGN_DIR="$RUNNER_TEMP/voiceremedy-signing"
+          cleanup() { rm -f "$SIGN_DIR/store.pass" "$SIGN_DIR/key.pass"; }
+          trap cleanup EXIT
           VERSION="${{ needs.meta.outputs.version }}"
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
-          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner
-          "$APKSIGNER" verify --print-certs "$APK" | tee certs.txt
+          UNSIGNED=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          if [ ! -f "$UNSIGNED" ]; then
+            UNSIGNED=$(find android/app/build/outputs/apk/release -name '*.apk' -print -quit)
+          fi
+          test -n "$UNSIGNED" && test -f "$UNSIGNED"
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)
+          ALIGNED="$SIGN_DIR/aligned.apk"
+          SIGNED="$SIGN_DIR/signed.apk"
+          "${BT}zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          ALIAS=$(cat "$SIGN_DIR/alias.txt")
+          "${BT}apksigner" sign \
+            --ks "$SIGN_DIR/release.jks" \
+            --ks-pass "file:$SIGN_DIR/store.pass" \
+            --key-pass "file:$SIGN_DIR/key.pass" \
+            --ks-key-alias "$ALIAS" \
+            --out "$SIGNED" \
+            "$ALIGNED"
+          "${BT}apksigner" verify --print-certs "$SIGNED" | tee certs.txt
           ACTUAL=$(grep -m1 'certificate SHA-256 digest' certs.txt | awk '{print $NF}')
-          EXPECTED=$(echo "$EXPECTED_APK_CERT_SHA256" | tr -d ' ')
+          EXPECTED=$(echo "$EXPECTED_APK_CERT_SHA256" | tr -d '[:space:]')
           if [ "$ACTUAL" != "$EXPECTED" ]; then
-            if [ "$ALLOW_NEW_KEY" = "true" ]; then echo "::warning::APK certificate $ACTUAL differs from earlier releases."
-            else echo "::error::APK certificate $ACTUAL does not match earlier releases ($EXPECTED)."; exit 1; fi
+            echo "::error::APK certificate $ACTUAL does not match the release key ($EXPECTED)."
+            exit 1
           fi
           mkdir -p out
-          cp "$APK" "out/VoiceRemedy-${VERSION}-Android-Fire.apk"
+          cp "$SIGNED" "out/VoiceRemedy-${VERSION}-Android-Fire.apk"
           ls -la out
       - uses: actions/upload-artifact@v4
         with:

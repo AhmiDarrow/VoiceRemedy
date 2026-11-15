@@ -14,6 +14,8 @@ VoiceRemedy 0.7.1 is a maintenance release of the offline singing coach for Wind
 - Installation instructions: INSTALL.md
 - File verification: SHA256SUMS-0.7.1.txt
 
-The Windows installer is unsigned and the APK is debug-signed for personal sideloading. Install 0.7.1 over 0.7.0 to keep your practice history.
+The Windows installer is unsigned. The Android / Fire APK is signed with a dedicated release key for personal sideloading. It is not a Play Store or Amazon Appstore build.
+
+The key that signed 0.7.0 is no longer available, so 0.7.1 uses a new signing key. Android and Fire refuse to install 0.7.1 over 0.7.0. Uninstall 0.7.0 once, then install 0.7.1. Uninstalling clears the on-device practice history. Later releases that keep this key install over 0.7.1 and keep that history.
 
 The app measures pitch, not overall vocal technique or vocal health.

@@ -33,7 +33,7 @@ Choose **Teach me a song** for song instruction or **Find my comfortable note** 
 If no clear voice is detected, the app asks you to try again instead of inventing a score. If anything feels uncomfortable, stop and rest.
 ## Build status
 
-The APK is debug-signed for personal sideloading, and the Windows installer is unsigned. Neither is a Play Store/Amazon Appstore release. Keep the same Android signing key for future upgrades if you want to preserve on-device history. Uninstalling the app clears its local practice history.
+The APK is signed with a dedicated release key for personal sideloading, and the Windows installer is unsigned. Neither is a Play Store or Amazon Appstore release. 0.7.1 uses a new signing key because the key that signed 0.7.0 is no longer available. Uninstall 0.7.0 once before installing 0.7.1. Uninstalling clears the on-device practice history. Later releases that keep this key install over 0.7.1 and keep that history.
 
 
 ## Teach your own song
