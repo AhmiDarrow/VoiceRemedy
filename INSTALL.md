@@ -22,7 +22,7 @@ Copy `VoiceRemedy-0.8.0-Android-Fire.apk` to the device and open it in its file 
 
 The same APK supports Android and Fire. It does not require installing the Play Store or replacing the Fire operating system. Amazon lists the 2021 Fire HD 10 as Fire OS 7 / Android API 28; this app's minimum is API 24. Compatibility is designed for that range but needs confirmation on your physical tablet.
 
-Amazon Kids profiles restrict access to sideloaded apps. Installing in the parent profile does not guarantee that the APK will appear in a child profile. If it cannot be shared through the tablet's normal parental controls, use the parent profile with your supervision. VoiceRemedy contains no ads, purchases, accounts, external links, or social features.
+Amazon Kids profiles restrict access to sideloaded apps. Installing in the parent profile does not guarantee that the APK will appear in a child profile. If it cannot be shared through the tablet's normal parental controls, use the parent profile with your supervision. VoiceRemedy contains no ads, purchases, accounts, or social features. The About section links to the project source on GitHub.
 
 ## A gentle first practice
 

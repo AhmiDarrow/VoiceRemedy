@@ -58,3 +58,5 @@ Hear the melody previews reference notes without opening the microphone. A littl
 The songbook supports title/skill search and shows attempted lines from local history. Continue selects the first unpractised line, then the whole version. Marks indicate practice attempts, not a certification of skill. See SOFTWARE-REVIEW.md for the product-research rationale.
 
 Find my note and octave guides a comfortable hum and explains the measured octave. Use the result to fit the lesson's first note. Consistent octave mismatches during practice receive spoken feedback and an optional Match my octave adjustment for the next attempt. One hum is not a vocal-range or voice-type diagnosis.
+
+"Hope this helps" - Ahmi

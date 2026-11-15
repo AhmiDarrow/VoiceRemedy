@@ -1,5 +1,8 @@
 {
   "app.adjust": "Ajustar mi sesión",
+  "app.about": "Acerca de",
+  "app.about.source": "Código fuente",
+  "app.about.version": "Versión",
   "app.again": "Intentarlo otra vez",
   "app.caption.listen": "Escucha mi nota. Luego te toca a ti.",
   "app.caption.paused": "Podemos hacer una pausa. Cuando quieras, te guío otra vez.",

@@ -1,5 +1,8 @@
 {
   "app.adjust": "调整这次练习",
+  "app.about": "关于",
+  "app.about.source": "源代码",
+  "app.about.version": "版本",
   "app.again": "再试一次",
   "app.caption.listen": "先听我的音。然后轮到你。",
   "app.caption.paused": "可以休息一下。你准备好了，我再带你走一遍。",

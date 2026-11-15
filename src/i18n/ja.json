@@ -1,5 +1,8 @@
 {
   "app.adjust": "この回を調整",
+  "app.about": "このアプリについて",
+  "app.about.source": "ソースコード",
+  "app.about.version": "バージョン",
   "app.again": "もう一度",
   "app.caption.listen": "わたしの音を聞いてください。次はあなたの番です。",
   "app.caption.paused": "休憩して大丈夫です。準備ができたら、もう一度案内します。",

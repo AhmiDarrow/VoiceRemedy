@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "Core permissions for the main window, including the installed app version.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}
