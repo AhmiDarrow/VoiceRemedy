@@ -1,6 +1,6 @@
 [package]
 name = "voice-remedy"
-version = "0.8.0"
+version = "0.8.1"
 description = "VoiceRemedy singing studio"
 authors = ["Ahmi Darrow"]
 edition = "2021"
