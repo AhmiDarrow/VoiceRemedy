@@ -1,3 +1,4 @@
+import { translate } from './i18n/translate'
 import { summarize, type Result } from './pitch'
 export type PracticeMode = 'echo' | 'phrase'
 export type Phase = { kind: 'prepare' | 'listen' | 'settle' | 'sing' | 'rest'; start: number; end: number; step: number; round: number; midi: number }
@@ -51,14 +52,15 @@ export function reviewNotes(intervals: readonly number[], base: number, values: 
   })
 }
 export function assessment(result: Result & Partial<SingingResult>): { key: string; title: string; action: string; detail: string } {
-  if (result.samples < MIN_SAMPLES) return { key: 'no-signal', title: 'We need a little more clear singing.', action: 'Check your microphone', detail: 'Try a quiet room and a comfortable hum for a few seconds. No score or progress was saved.' }
+  const tr = translate
+  if (result.samples < MIN_SAMPLES) return { key: 'no-signal', title: tr('assess.nosignal.title'), action: tr('assess.nosignal.action'), detail: tr('assess.nosignal.detail') }
   const r = result as Partial<SingingResult>
-  if ((r.coverage !== undefined && r.coverage < .6) || (r.participation !== undefined && r.participation < .45)) return { key: 'coverage', title: 'Let’s give every note a turn.', action: 'Repeat in echo mode', detail: 'We heard some clear singing, but not enough of the planned singing time. Try each turn for as long as it feels easy; it is fine to breathe or stop. Shorter echoes in Gentle pace may help.' }
-  if (Math.abs(result.offset ?? 0) > 700) return { key: 'octave', title: 'Let’s bring the target closer to you.', action: 'Find a comfortable starting note', detail: 'Your typical pitch was quite far from the reference. Listen again or use the comfortable-note finder. Do not reach or push for a note.' }
-  if ((result.accuracy ?? 0) >= 75) return { key: 'great', title: 'You’re finding your center.', action: r.mode === 'echo' ? 'Try connecting the phrase' : 'Explore the next skill', detail: 'Most measured singing was close to the target. Keep the same easy feeling as you try a little more independence.' }
-  if ((result.offset ?? 0) < -35) return { key: 'low', title: 'Listen for a slightly higher center.', action: 'Hear the tricky note again', detail: 'Your typical pitch sat below the reference. Hear it once more, imagine the sound, then approach it softly from below.' }
-  if ((result.offset ?? 0) > 35) return { key: 'high', title: 'Let the note settle a little lower.', action: 'Hear the tricky note again', detail: 'Your typical pitch sat above the reference. Listen again and let the sound settle down without adding volume.' }
-  return { key: 'steady', title: 'A shorter sound can feel steadier.', action: 'Try the gentle pace', detail: 'Your pitch moved around the center. Try a shorter, easy hum and a fresh breath between turns. You do not need to eliminate natural vibrato.' }
+  if ((r.coverage !== undefined && r.coverage < .6) || (r.participation !== undefined && r.participation < .45)) return { key: 'coverage', title: tr('assess.coverage.title'), action: tr('assess.coverage.action'), detail: tr('assess.coverage.detail') }
+  if (Math.abs(result.offset ?? 0) > 700) return { key: 'octave', title: tr('assess.octave.title'), action: tr('assess.octave.action'), detail: tr('assess.octave.detail') }
+  if ((result.accuracy ?? 0) >= 75) return { key: 'great', title: tr('assess.great.title'), action: tr(r.mode === 'echo' ? 'assess.great.action.echo' : 'assess.great.action.phrase'), detail: tr('assess.great.detail') }
+  if ((result.offset ?? 0) < -35) return { key: 'low', title: tr('assess.low.title'), action: tr('assess.low.action'), detail: tr('assess.low.detail') }
+  if ((result.offset ?? 0) > 35) return { key: 'high', title: tr('assess.high.title'), action: tr('assess.high.action'), detail: tr('assess.high.detail') }
+  return { key: 'steady', title: tr('assess.steady.title'), action: tr('assess.steady.action'), detail: tr('assess.steady.detail') }
 }
 export function nextLessonId(results: Result[], ids: readonly string[]): string {
   return ids.find(id => {

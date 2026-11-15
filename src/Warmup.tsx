@@ -3,15 +3,19 @@ import { ArrowRight, Leaf, Play, Square } from 'lucide-react'
 import { speak, stopPlayback } from './audio'
 import { App as NativeApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
-const stages = [
-  { label: 'Settle in', hint: 'Let your jaw and shoulders soften. Sit or stand comfortably.', seconds: 8, kind: 'rest' },
-  { label: 'An easy breath in', hint: 'Let the air arrive naturally. No need for a big breath.', seconds: 3, kind: 'in' },
-  { label: 'Let it flow out', hint: 'Release the air gently. Skip the timing if it feels uncomfortable.', seconds: 4, kind: 'out' },
-  { label: 'An easy breath in', hint: 'Stay comfortable. There is no breath-holding here.', seconds: 3, kind: 'in' },
-  { label: 'Let it flow out', hint: 'Think of an easy sigh, without forcing the air.', seconds: 4, kind: 'out' },
-  { label: 'Ready for a soft sound', hint: 'Take a normal breath. Bring this easy feeling into your first hum.', seconds: 6, kind: 'rest' },
-]
+import { formatInteger, localizeKnown } from './i18n/translate'
+import { useI18n } from './i18n/useI18n'
+
 export function Warmup({ voice, onDone }: { voice: boolean; onDone: () => void }) {
+  const { t } = useI18n()
+  const stages = [
+    { label: t('warm.s0.label'), hint: t('warm.s0.hint'), seconds: 8, kind: 'rest' },
+    { label: t('warm.s1.label'), hint: t('warm.s1.hint'), seconds: 3, kind: 'in' },
+    { label: t('warm.s2.label'), hint: t('warm.s2.hint'), seconds: 4, kind: 'out' },
+    { label: t('warm.s1.label'), hint: t('warm.s3.hint'), seconds: 3, kind: 'in' },
+    { label: t('warm.s2.label'), hint: t('warm.s4.hint'), seconds: 4, kind: 'out' },
+    { label: t('warm.s5.label'), hint: t('warm.s5.hint'), seconds: 6, kind: 'rest' },
+  ]
   const [running, setRunning] = useState(false), [time, setTime] = useState(0), [intro, setIntro] = useState(false), [error, setError] = useState('')
   const token = useRef(0), timer = useRef(0), total = stages.reduce((s, stage) => s + stage.seconds, 0)
   function stop() { token.current++; clearInterval(timer.current); stopPlayback(); setRunning(false); setIntro(false) }
@@ -31,5 +35,5 @@ export function Warmup({ voice, onDone }: { voice: boolean; onDone: () => void }
   let boundary = 0
   const stage = stages.find(s => { boundary += s.seconds; return time < boundary }) ?? stages[stages.length - 1]
   const complete = time >= total
-  return <section className="warmup-card"><div><span className="eyebrow"><Leaf size={14}/> BEFORE THE FIRST NOTE</span><h2>{complete ? 'A little more space to sing.' : 'Arrive, breathe, begin.'}</h2><p>{running ? intro ? 'Listen to your coach, then follow the circle.' : stage.hint : complete ? 'Carry that comfortable feeling into a gentle hum.' : 'A short, unscored moment to settle your body before using your voice.'}</p><div className="inline-actions">{running ? <button className="secondary" onClick={stop}><Square size={14}/> Stop warm-up</button> : complete ? <button className="primary" onClick={onDone}>Ready to sing <ArrowRight size={16}/></button> : <button className="secondary" onClick={() => void start()}><Play size={14}/> Begin a gentle warm-up</button>}<span className="small">No microphone · about 40 seconds</span></div>{error && <p className="small" role="status">{error}</p>}</div><div className={'breath-orb ' + (running && !intro ? stage.kind : '')} style={{ '--breath-seconds': `${stage.seconds}s` } as CSSProperties}><span>{complete ? 'Ready' : running ? intro ? 'Listen' : stage.label : 'A moment for you'}</span>{running && !intro && <small>{Math.ceil(total - time)}s</small>}</div></section>
+  return <section className="warmup-card"><div><span className="eyebrow"><Leaf size={14}/> {t('warm.eyebrow')}</span><h2>{complete ? t('warm.title.done') : t('warm.title.arrive')}</h2><p>{running ? intro ? t('warm.body.listen') : stage.hint : complete ? t('warm.body.done') : t('warm.body.idle')}</p><div className="inline-actions">{running ? <button className="secondary" onClick={stop}><Square size={14}/> {t('warm.stop')}</button> : complete ? <button className="primary" onClick={onDone}>{t('warm.ready')} <ArrowRight size={16}/></button> : <button className="secondary" onClick={() => void start()}><Play size={14}/> {t('warm.begin')}</button>}<span className="small">{t('warm.meta')}</span></div>{error && <p className="small" role="status">{localizeKnown(error)}</p>}</div><div className={'breath-orb ' + (running && !intro ? stage.kind : '')} style={{ '--breath-seconds': `${stage.seconds}s` } as CSSProperties}><span>{complete ? t('warm.orb.ready') : running ? intro ? t('warm.orb.listen') : stage.label : t('warm.orb.moment')}</span>{running && !intro && <small>{t('studio.seconds', { n: formatInteger(Math.ceil(total - time)) })}</small>}</div></section>
 }
