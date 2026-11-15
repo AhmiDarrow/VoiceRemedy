@@ -10,6 +10,7 @@ import { songLessons } from './songbook'
 import { loadPreferences, savePreferences } from './storage'
 import { formatLesson } from './i18n/content'
 import { detectLocale } from './i18n/locales'
+import { packagedAppVersion } from './appVersion'
 import { catalog, getLocale, localizeKnown, pickText, resetLocaleForTests, setLocale, translate } from './i18n/translate'
 
 vi.mock('./audio', () => ({
@@ -99,5 +100,26 @@ describe('the coach screen', () => {
     await act(async () => { resetLocaleForTests() })
     expect(document.documentElement.lang).toBe('ja')
     expect(host.textContent).toContain(catalog('ja')['app.start'])
+  })
+
+  it('shows About with the installed version and the untranslated sign-off', async () => {
+    const signOff = '"Hope this helps" - Ahmi'
+    localStorage.setItem('voiceremedy.preferences.v1', JSON.stringify({ base: 60, voice: true, gentle: false, mode: 'echo', locale: 'de' }))
+    resetLocaleForTests()
+    await act(async () => { root.render(createElement(App)) })
+    expect(host.textContent).toContain(catalog('de')['app.about'])
+    expect(host.textContent).toContain(catalog('de')['app.about.version'])
+    expect(host.textContent).toContain(signOff)
+    expect(host.querySelector('.coach-about-name')?.textContent).toBe('VoiceRemedy')
+    expect(host.querySelector('.coach-about-version')?.textContent).toBe(packagedAppVersion())
+    const link = host.querySelector('.coach-about-card a')
+    expect(link?.getAttribute('href')).toBe('https://github.com/AhmiDarrow/VoiceRemedy')
+    expect(link?.textContent).toBe(catalog('de')['app.about.source'])
+    const saved = JSON.parse(localStorage.getItem('voiceremedy.preferences.v1') || '{}') as { locale?: string }
+    localStorage.setItem('voiceremedy.preferences.v1', JSON.stringify({ ...saved, locale: 'ja' }))
+    await act(async () => { resetLocaleForTests() })
+    expect(host.textContent).toContain(catalog('ja')['app.about'])
+    expect(host.textContent).toContain(catalog('ja')['app.about.source'])
+    expect(host.textContent).toContain(signOff)
   })
 })

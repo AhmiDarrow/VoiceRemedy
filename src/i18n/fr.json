@@ -1,5 +1,8 @@
 {
   "app.adjust": "Régler ma séance",
+  "app.about": "À propos",
+  "app.about.source": "Code source",
+  "app.about.version": "Version",
   "app.again": "Réessayer",
   "app.caption.listen": "Écoute ma note. Ensuite, c’est à toi.",
   "app.caption.paused": "Nous pouvons faire une pause. Quand tu veux, je te guide à nouveau.",

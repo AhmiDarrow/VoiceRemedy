@@ -15,6 +15,7 @@ import { App as NativeApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { songLineToReview } from './songbook'
 import { Songbook } from './SongbookPanel'
+import { ABOUT_SIGN_OFF, openSourcePage, packagedAppVersion, readAppVersion, SOURCE_URL, sourceLinkOpensInNewTab } from './appVersion'
 import { LanguageField } from './i18n/LanguageField'
 import { presentLesson } from './i18n/content'
 import { coachLine, formatInteger, formatPercentPoints, localizeKnown } from './i18n/translate'
@@ -37,6 +38,7 @@ export default function App() {
   const [mode, setMode] = useState<PracticeMode>(prefs.mode)
   const [stage, setStage] = useState<'ready'|'teaching'|'practice'|'feedback'|'paused'>('ready')
   const [speaking, setSpeaking] = useState(false), [error, setError] = useState(''), [finder, setFinder] = useState(false), [finding, setFinding] = useState(false)
+  const [appVersion, setAppVersion] = useState(packagedAppVersion)
   const [result, setResult] = useState<SingingResult|null>(null)
   const [queued, setQueued] = useState(false)
   const token = useRef(0), locked = useRef(false)
@@ -106,6 +108,7 @@ export default function App() {
   }
   useEffect(() => { if(queued) { setQueued(false); void begin() } },[queued])
   useEffect(() => { try { savePreferences({ ...loadPreferences(), base, voice, gentle, mode, liveHints, lessonId: lesson.id, locale }) } catch { setError('Your session is ready, but its settings could not be saved on this device.') } },[base,voice,gentle,mode,liveHints,lesson.id,locale])
+  useEffect(() => { let live = true; void readAppVersion().then(version => { if (live) setAppVersion(version) }); return () => { live = false } }, [])
   useEffect(() => {
     const pause = () => { setPreviewing(false); token.current++; locked.current=false; setQueued(false); stopPlayback(); setSpeaking(false); setStage(s=>s==='teaching'||s==='practice'?'paused':s) }
     const hide = () => { if(document.hidden) pause() }
@@ -143,6 +146,8 @@ export default function App() {
       {finder && <PitchFinder spoken={voice} onBusy={setFinding} onClose={()=>setFinder(false)} onSelect={note=>{const fit=placeStartingNote(note,lesson.intervals);setBase(fit.base);setPlacement({kind:'hum',note:noteName(note),exact:fit.exact,nearest:noteName(fit.first)});setFinder(false);setResult(null);setStage('ready')}}/>}
       {!active && <div className="coach-requests"><span>{t('app.choose')}</span><div><button onClick={()=>choose(lessons[0])}><Mic size={16}/>{t('app.new')}</button><button onClick={()=>{setFinder(false);setImporter(false);setSongbook(!songbook)}}><Music2 size={16}/>{t('app.teachSong')}</button><button onClick={()=>{setSongbook(false);setFinder(false);setImporter(!importer)}}><Music2 size={16}/>{t('app.upload')}</button><button onClick={()=>{setSongbook(false);setImporter(false);setFinder(!finder)}}><Headphones size={16}/>{t('app.findNote')}</button></div></div>}
       <details className="coach-options"><summary><Settings2 size={16}/>{t('app.adjust')}</summary><div className="coach-option-fields"><label>{t('app.starting')} <select value={base} disabled={active} onChange={e=>{setBase(Number(e.target.value));resetFeedback()}}>{Array.from({length:bounds.max-bounds.min+1},(_,i)=>i+bounds.min).map(n=><option value={n} key={n}>{noteName(n)}</option>)}</select></label><LanguageField disabled={active}/><label><input type="checkbox" checked={gentle} disabled={active} onChange={e=>{setGentle(e.target.checked);resetFeedback()}}/> {t('app.shorter')}</label><label><input type="checkbox" checked={liveHints} disabled={active} onChange={e=>setLiveHints(e.target.checked)}/> {t('app.hints')}</label><label>{t('app.style')} <select value={mode} disabled={active} onChange={e=>{setMode(e.target.value as PracticeMode);resetFeedback()}}><option value="echo">{t('app.style.echo')}</option><option value="phrase">{t('app.style.phrase')}</option></select></label><label>{t('app.work')} <select value={lesson.id} disabled={active} onChange={e=>choose(library.find(l=>l.id===e.target.value)!)}>{library.map(l=>{const view=presentLesson(l);return <option key={l.id} value={l.id}>{view.title}{l.coachKey==='imported'?' · '+view.label:''}</option>})}</select></label></div><p>{t('app.options.hints')}</p><p>{t('app.options.score')}</p></details>
-    <details className="coach-options"><summary>{t('app.how')}</summary><p>{t('app.how.p1')}</p><p>{t('app.how.p2')}</p><p>{t('app.how.p3')}</p><p>{t('app.spoken')}</p></details></main><footer className="coach-footer">{t('app.footer')}</footer>
+    <details className="coach-options"><summary>{t('app.how')}</summary><p>{t('app.how.p1')}</p><p>{t('app.how.p2')}</p><p>{t('app.how.p3')}</p><p>{t('app.spoken')}</p></details>
+      <details className="coach-options coach-about"><summary>{t('app.about')}</summary><div className="coach-about-card"><p className="coach-about-name">VoiceRemedy</p><p>{t('app.about.version')} <span className="coach-about-version">{appVersion}</span></p><p><a href={SOURCE_URL} rel="noreferrer" target={sourceLinkOpensInNewTab() ? '_blank' : undefined} onClick={event => { void openSourcePage(event) }}>{t('app.about.source')}</a></p><p className="coach-about-sign">{ABOUT_SIGN_OFF}</p></div></details>
+    </main><footer className="coach-footer">{t('app.footer')}</footer>
   </div>
 }

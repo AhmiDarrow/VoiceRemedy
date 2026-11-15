@@ -1,5 +1,8 @@
 {
   "app.adjust": "Dostosuj sesję",
+  "app.about": "O programie",
+  "app.about.source": "Kod źródłowy",
+  "app.about.version": "Wersja",
   "app.again": "Spróbuj jeszcze raz",
   "app.caption.listen": "Posłuchaj mojej nuty. Potem twoja kolej.",
   "app.caption.paused": "Możemy zrobić przerwę. Kiedy będziesz gotów, poprowadzę cię jeszcze raz.",

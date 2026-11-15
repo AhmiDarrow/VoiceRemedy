@@ -1,5 +1,8 @@
 {
   "app.adjust": "Adjust my session",
+  "app.about": "About",
+  "app.about.source": "Source code",
+  "app.about.version": "Version",
   "app.again": "Try that again",
   "app.caption.listen": "Listen to my note. Then it is your turn.",
   "app.caption.paused": "We can take a break. When you are ready, I will guide you through it again.",

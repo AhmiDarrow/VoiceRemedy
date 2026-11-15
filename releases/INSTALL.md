@@ -4,25 +4,25 @@ Download the installers from the VoiceRemedy release page on GitHub (Releases �
 
 ## Windows PC
 
-Open `VoiceRemedy-0.8.0-Windows-Setup.exe` and follow the installer. It installs for your current Windows account and creates a Start menu entry. Windows may identify this local build as unsigned. Microsoft WebView2 is required; the installer can download it if it is missing.
+Open `VoiceRemedy-0.8.1-Windows-Setup.exe` and follow the installer. It installs for your current Windows account and creates a Start menu entry. Windows may identify this local build as unsigned. Microsoft WebView2 is required; the installer can download it if it is missing.
 
 Open VoiceRemedy, press **Start my lesson**, and follow the spoken coach. Allow microphone access when Windows or the app asks. If access is denied, check Windows Settings → Privacy & security → Microphone, including access for desktop apps.
 
 ## Android phone or tablet
 
-Copy `VoiceRemedy-0.8.0-Android-Fire.apk` to the device and open it in its file manager. Android may ask you to permit installation from that file manager. Install, open VoiceRemedy, and allow microphone access when you begin a practice. No Google account or Play services are needed.
+Copy `VoiceRemedy-0.8.1-Android-Fire.apk` to the device and open it in its file manager. Android may ask you to permit installation from that file manager. Install, open VoiceRemedy, and allow microphone access when you begin a practice. No Google account or Play services are needed.
 
 ## Fire HD 10, 2021 or newer
 
 1. Use the adult/parent profile to install the app.
-2. Connect the tablet to your PC by USB, select file transfer if prompted, and copy `VoiceRemedy-0.8.0-Android-Fire.apk` into the tablet's Downloads folder.
+2. Connect the tablet to your PC by USB, select file transfer if prompted, and copy `VoiceRemedy-0.8.1-Android-Fire.apk` into the tablet's Downloads folder.
 3. Open the APK from the tablet's file manager. If Fire OS blocks installation, use its **Install unknown apps** setting to allow that file manager, then open the APK again. Menu names vary by Fire OS version.
 4. Open VoiceRemedy and allow its microphone when starting an exercise. The first lesson is **Find your starting note**.
 5. You can revoke the file manager's unknown-app installation permission afterward; VoiceRemedy will continue to work.
 
 The same APK supports Android and Fire. It does not require installing the Play Store or replacing the Fire operating system. Amazon lists the 2021 Fire HD 10 as Fire OS 7 / Android API 28; this app's minimum is API 24. Compatibility is designed for that range but needs confirmation on your physical tablet.
 
-Amazon Kids profiles restrict access to sideloaded apps. Installing in the parent profile does not guarantee that the APK will appear in a child profile. If it cannot be shared through the tablet's normal parental controls, use the parent profile with your supervision. VoiceRemedy contains no ads, purchases, accounts, external links, or social features.
+Amazon Kids profiles restrict access to sideloaded apps. Installing in the parent profile does not guarantee that the APK will appear in a child profile. If it cannot be shared through the tablet's normal parental controls, use the parent profile with your supervision. VoiceRemedy contains no ads, purchases, accounts, or social features. The About section links to the project source on GitHub.
 
 ## A gentle first practice
 

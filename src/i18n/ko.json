@@ -1,5 +1,8 @@
 {
   "app.adjust": "세션 조정",
+  "app.about": "정보",
+  "app.about.source": "소스 코드",
+  "app.about.version": "버전",
   "app.again": "다시 해 보기",
   "app.caption.listen": "제 음을 들어 보세요. 그다음이 당신 차례예요.",
   "app.caption.paused": "잠시 쉬어도 됩니다. 준비되면 다시 안내할게요.",
