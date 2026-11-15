@@ -1,3 +1,4 @@
+import { isLocale } from './i18n/locales'
 import type { Result } from './pitch'
 export function loadResults(): Result[] {
   try {
@@ -13,13 +14,13 @@ export function loadResults(): Result[] {
   } catch { return [] }
 }
 export function saveResults(results: Result[]) { localStorage.setItem('voiceremedy.sessions.v1', JSON.stringify(results.slice(0, 200))) }
-export type Preferences = { liveHints?: boolean; base: number; voice: boolean; gentle: boolean; mode: 'echo' | 'phrase'; lessonId?: string }
+export type Preferences = { liveHints?: boolean; base: number; voice: boolean; gentle: boolean; mode: 'echo' | 'phrase'; lessonId?: string; locale?: string }
 export function loadPreferences(): Preferences {
   const fallback: Preferences = { base: 60, voice: true, gentle: false, mode: 'echo' }
   try {
     const value = JSON.parse(localStorage.getItem('voiceremedy.preferences.v1') || 'null')
     if (!value || typeof value !== 'object') return fallback
-    return { ...(typeof value.liveHints==='boolean'?{liveHints:value.liveHints}:{}), base: Number.isInteger(value.base) && value.base >= 36 && value.base <= 83 ? value.base : fallback.base, voice: typeof value.voice === 'boolean' ? value.voice : true, gentle: value.gentle === true, mode: value.mode === 'phrase' ? 'phrase' : 'echo', ...(typeof value.lessonId === 'string' && value.lessonId.length < 80 ? {lessonId:value.lessonId} : {}) }
+    return { ...(typeof value.liveHints==='boolean'?{liveHints:value.liveHints}:{}), base: Number.isInteger(value.base) && value.base >= 36 && value.base <= 83 ? value.base : fallback.base, voice: typeof value.voice === 'boolean' ? value.voice : true, gentle: value.gentle === true, mode: value.mode === 'phrase' ? 'phrase' : 'echo', ...(typeof value.lessonId === 'string' && value.lessonId.length < 80 ? {lessonId:value.lessonId} : {}), ...(isLocale(value.locale) ? { locale: value.locale } : {}) }
   } catch { return fallback }
 }
 export function savePreferences(value: Preferences) { localStorage.setItem('voiceremedy.preferences.v1', JSON.stringify(value)) }

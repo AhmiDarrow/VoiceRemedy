@@ -3,28 +3,33 @@ import { teachingSongs, songLessons } from './songbook'
 import type { Lesson } from './course'
 import type { Result } from './pitch'
 import { MIN_SAMPLES } from './coaching'
+import { presentLesson, songMatches, songSkill, songTitle } from './i18n/content'
+import { formatInteger, pluralCategory } from './i18n/translate'
+import { useI18n } from './i18n/useI18n'
 
 export function Songbook({history,onChoose,onClose}:{history:Result[];onChoose:(lesson:Lesson)=>void;onClose:()=>void}) {
+  const { t } = useI18n()
   const [query,setQuery]=useState('')
-  const matches=teachingSongs.filter(s=>(s.title+' '+s.skill).toLowerCase().includes(query.trim().toLowerCase()))
+  const matches=teachingSongs.filter(s=>songMatches(s.id,s.title,s.skill,query))
   const practised=new Set(history.filter(r=>r.samples>=MIN_SAMPLES).map(r=>r.exercise))
-  return <section className="song-import" aria-label="Songbook">
-    <div className="import-heading"><h2>Sing a familiar song</h2><button className="coach-secondary" onClick={onClose}>Close songbook</button></div>
-    <p>Learn a short line, then connect the song. Choose any line to revisit it.</p>
-    <label>Find a song<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Song name or skill"/></label>
-    <p role="status" className="import-hint">{matches.length} {matches.length===1?'song':'songs'} found</p>
+  return <section className="song-import" aria-label={t('songbook.aria')}>
+    <div className="import-heading"><h2>{t('songbook.title')}</h2><button className="coach-secondary" onClick={onClose}>{t('songbook.close')}</button></div>
+    <p>{t('songbook.lead')}</p>
+    <label>{t('songbook.find')}<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={t('songbook.placeholder')}/></label>
+    <p role="status" className="import-hint">{t('songbook.count.'+pluralCategory(matches.length),{count:formatInteger(matches.length)})}</p>
     {matches.map(song=>{
       const entries=songLessons.filter(l=>l.songId===song.id),lines=entries.filter(l=>!l.wholeSong)
       const count=lines.filter(l=>practised.has(l.id)).length
       const next=lines.find(l=>!practised.has(l.id))??entries[entries.length-1]
+      const title=songTitle(song.id,song.title)
       return <article className="songbook-entry" key={song.id}>
-        <h3>{song.title}</h3><p>{song.skill}</p>
-        <p className="import-hint">{count} of {lines.length} lines practised · {practised.has(entries[entries.length-1].id)?'Whole version attempted':'Whole version ready when you are'}</p>
-        <button className="coach-primary" onClick={()=>onChoose(next)}>{count?'Continue':'Start'} {song.title}</button>
-        <div className="import-actions">{entries.map(l=><button className="coach-secondary" key={l.id} aria-label={song.title+' · '+l.label} onClick={()=>onChoose(l)}>{l.wholeSong?(song.melodyOnly?'Sing whole theme':'Sing whole verse'):l.label}{practised.has(l.id)&&<span aria-label="previously practised"> ✓</span>}</button>)}</div>
+        <h3>{title}</h3><p>{songSkill(song.id,song.skill)}</p>
+        <p className="import-hint">{t('songbook.progress',{count:formatInteger(count),total:formatInteger(lines.length)})} · {practised.has(entries[entries.length-1].id)?t('songbook.wholeTried'):t('songbook.wholeReady')}</p>
+        <button className="coach-primary" onClick={()=>onChoose(next)}>{count?t('songbook.continue',{title}):t('songbook.start',{title})}</button>
+        <div className="import-actions">{entries.map(l=>{const view=presentLesson(l);return <button className="coach-secondary" key={l.id} aria-label={title+' · '+view.label} onClick={()=>onChoose(l)}>{l.wholeSong?(song.melodyOnly?t('songbook.theme'):t('songbook.verse')):view.label}{practised.has(l.id)&&<span aria-label={t('songbook.previously')}> ✓</span>}</button>})}</div>
       </article>
     })}
-    {!matches.length&&<p>Try another name, or <button className="coach-secondary" onClick={()=>setQuery('')}>Show all songs</button>.</p>}
-    <p className="import-hint">Practice marks record attempts, not mastery. Public-domain music arranged for gentle, offline practice.</p>
+    {!matches.length&&<p>{t('songbook.empty')}<button className="coach-secondary" onClick={()=>setQuery('')}>{t('songbook.showAll')}</button>.</p>}
+    <p className="import-hint">{t('songbook.footer')}</p>
   </section>
 }

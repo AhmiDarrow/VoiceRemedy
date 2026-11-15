@@ -6,7 +6,10 @@ import { octaveNumber } from './voicePlacement'
 import { midiNumber, noteName } from './pitch'
 import { App as NativeApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
+import { formatInteger, localizeKnown } from './i18n/translate'
+import { useI18n } from './i18n/useI18n'
 export function PitchFinder({ onSelect, onClose, onBusy, spoken=false }: { onSelect: (note: number) => void; onClose: () => void; onBusy: (value: boolean) => void; spoken?:boolean }) {
+  const { t } = useI18n()
   const [state, setState] = useState<'ready'|'explaining'|'opening'|'listening'|'done'>('ready'), [seconds, setSeconds] = useState(0)
   const [candidate, setCandidate] = useState<number | null>(null), [error, setError] = useState(''), [live, setLive] = useState<number | null>(null)
   const resource = useRef<{ mic: Microphone | null; timer: number }>({ mic: null, timer: 0 }), generation = useRef(0), opening = useRef(false), values = useRef<number[]>([])
@@ -33,11 +36,11 @@ export function PitchFinder({ onSelect, onClose, onBusy, spoken=false }: { onSel
       }, 80)
     } catch (error) { if (gen === generation.current) { stop(); setState('ready'); setError(microphoneError(error)) } }
   }
-  return <section className="finder-card" aria-labelledby="finder-title"><button className="icon-button finder-close" aria-label="Close note finder" onClick={onClose}><X size={17}/></button><span className="eyebrow">START WHERE YOUR VOICE FEELS AT HOME</span><h2 id="finder-title">Find your note and octave.</h2><p>No note names to know and no target to chase. Hum a relaxed “mm” near your normal speaking voice for a few seconds. We will find a starting point, not your full vocal range or voice type.</p>
-    {state==='explaining'&&<p role="status">Listen first. The microphone opens after the explanation. Then hum gently for a few seconds.</p>}
-    {error && <p role="alert" className="finder-error">{error}</p>}
-    {state === 'listening' && <div className="finder-listening" aria-live="polite"><strong>{live === null ? 'Listening…' : noteName(live)}</strong><span>Keep it easy · {Math.ceil(5 - seconds)} seconds</span><progress max={5} value={seconds}/></div>}
-    {state === 'done' && <div className="finder-answer"><strong>{candidate === null ? 'Let’s try one steady hum.' : `I heard ${noteName(candidate)} · octave ${octaveNumber(candidate)}.`}</strong><p>{candidate === null ? 'We need a few seconds of a clear, steady note. You can also choose a starting note in your session settings.' : 'The letter names the note; the number tells you which octave it is in. An octave repeats the same note names higher or lower. This is the note you hummed today, not a label for your voice. Hear it, check it feels easy, then use it to adjust the lesson.'}</p></div>}
-    <div className="inline-actions">{state === 'explaining'||state === 'opening' || state === 'listening' ? <button className="secondary" onClick={() => { stop(); stopPlayback();setState('ready') }}>Cancel note finder</button> : candidate !== null ? <><button className="primary" onClick={() => onSelect(candidate)}><Check size={17}/> Use {noteName(candidate)}</button><button className="secondary" onClick={() => void playNotes([candidate]).catch(e => setError(microphoneError(e)))}><Volume2 size={16}/> Hear it</button><button className="text-button" onClick={() => void start()}>Try another hum</button></> : <button className="primary" onClick={() => void start()}><Mic size={17}/> {state === 'done' ? 'Try the hum again' : 'Find my note'}</button>}</div>
+  return <section className="finder-card" aria-labelledby="finder-title"><button className="icon-button finder-close" aria-label={t('finder.close')} onClick={onClose}><X size={17}/></button><span className="eyebrow">{t('finder.eyebrow')}</span><h2 id="finder-title">{t('finder.title')}</h2><p>{t('finder.lead')}</p>
+    {state==='explaining'&&<p role="status">{t('finder.explain')}</p>}
+    {error && <p role="alert" className="finder-error">{localizeKnown(error)}</p>}
+    {state === 'listening' && <div className="finder-listening" aria-live="polite"><strong>{live === null ? t('finder.listening') : noteName(live)}</strong><span>{t('finder.keep',{n:formatInteger(Math.ceil(5 - seconds))})}</span><progress max={5} value={seconds}/></div>}
+    {state === 'done' && <div className="finder-answer"><strong>{candidate === null ? t('finder.retry') : t('finder.heard',{note:noteName(candidate),octave:formatInteger(octaveNumber(candidate))})}</strong><p>{candidate === null ? t('finder.need') : t('finder.explainDone')}</p></div>}
+    <div className="inline-actions">{state === 'explaining'||state === 'opening' || state === 'listening' ? <button className="secondary" onClick={() => { stop(); stopPlayback();setState('ready') }}>{t('finder.cancel')}</button> : candidate !== null ? <><button className="primary" onClick={() => onSelect(candidate)}><Check size={17}/> {t('finder.use',{note:noteName(candidate)})}</button><button className="secondary" onClick={() => void playNotes([candidate]).catch(e => setError(microphoneError(e)))}><Volume2 size={16}/> {t('finder.hear')}</button><button className="text-button" onClick={() => void start()}>{t('finder.another')}</button></> : <button className="primary" onClick={() => void start()}><Mic size={17}/> {state === 'done' ? t('finder.again') : t('finder.find')}</button>}</div>
   </section>
 }

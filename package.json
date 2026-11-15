@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5180",
     "build": "tsc --noEmit && vite build",
-    "test": "vitest run",
+    "test": "vitest run && node scripts/check-i18n.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 5180",
     "desktop:build": "tauri build --bundles nsis",
     "desktop:dev": "tauri dev",
